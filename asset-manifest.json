@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/aave-react/static/css/main.70ba9b12.chunk.css",
-    "main.js": "/aave-react/static/js/main.ef067a70.chunk.js",
-    "main.js.map": "/aave-react/static/js/main.ef067a70.chunk.js.map",
+    "main.js": "/aave-react/static/js/main.21da95cc.chunk.js",
+    "main.js.map": "/aave-react/static/js/main.21da95cc.chunk.js.map",
     "runtime-main.js": "/aave-react/static/js/runtime-main.37406b84.js",
     "runtime-main.js.map": "/aave-react/static/js/runtime-main.37406b84.js.map",
     "static/css/2.0a9ec390.chunk.css": "/aave-react/static/css/2.0a9ec390.chunk.css",
@@ -20,6 +20,6 @@
     "static/css/2.0a9ec390.chunk.css",
     "static/js/2.117fec06.chunk.js",
     "static/css/main.70ba9b12.chunk.css",
-    "static/js/main.ef067a70.chunk.js"
+    "static/js/main.21da95cc.chunk.js"
   ]
 }
