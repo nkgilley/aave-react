@@ -4,9 +4,14 @@ import NetworkSelect from './components/NetworkSelect'
 import { createClient } from 'urql'
 import { useEffect, useState } from 'react'
 
-const US_LOCALE = Intl.NumberFormat('en-US', {
+const US_ACCOUNTING = Intl.NumberFormat('en-US', {
   style: "currency",
-  currency: "USD"
+  currency: "USD",
+  currencySign: "accounting"
+});
+const US_PERCENT = Intl.NumberFormat('en-US', {
+  style: "percent",
+  minimumFractionDigits: 2
 });
 
 const APIURLS = {'avax':'https://api.thegraph.com/subgraphs/name/aave/protocol-v2-avalanche',
@@ -110,7 +115,7 @@ function App() {
   }, [address, network]) // only rerun if address changes
 
   async function fetchData() {
-    if (!address || address.length == 0) return
+    if (!address || address.length === 0) return
     // clear data
     setUserReserves([])
     setUserSubtotals([])
@@ -171,9 +176,9 @@ function App() {
       _totals['sum'] += _subtotal.deposits - _subtotal.debt
 
       // string formatting
-      _subtotal['sum'] = US_LOCALE.format(_subtotal.deposits - _subtotal.debt)
-      _subtotal['deposits'] = US_LOCALE.format(_subtotal.deposits)
-      _subtotal['debt'] = US_LOCALE.format(_subtotal.debt)
+      _subtotal['sum'] = US_ACCOUNTING.format(_subtotal.deposits - _subtotal.debt)
+      _subtotal['deposits'] = US_ACCOUNTING.format(_subtotal.deposits)
+      _subtotal['debt'] = US_ACCOUNTING.format(_subtotal.debt)
       if (currentATokenBalance > 0 || currentTotalDebt > 0) {
         _token_list.push(symbol)
         _subtotals.push(_subtotal)
@@ -244,8 +249,6 @@ function App() {
     setRates(_rates)
      
 
-
-
     // Calculate annual rewards
     for (var i=0; i < user_response.data.userReserves.length; i++) {
       let reserve = user_response.data.userReserves[i]
@@ -268,10 +271,6 @@ function App() {
       let borrow_rewards_usd = currentTotalDebt * token_price * _rates[symbol]['borrow']['rewards']
       let rewards = (deposit_rewards_usd + borrow_rewards_usd) / avax_price
       console.log(symbol + ' Rewards', deposit_rewards_usd, borrow_rewards_usd)
-      // if (symbol.indexOf('AVAX') === -1) {
-      //   if (deposit_rewards > 0) deposit_rewards /= avax_price
-      //   if (borrow_rewards > 0) borrow_rewards /= avax_price
-      // }
 
       let rewards_usd = deposit_rewards_usd + borrow_rewards_usd
       // let rewards_usd = rewards * avax_price
@@ -282,23 +281,37 @@ function App() {
       _annual_totals['sum'] += native_usd + rewards_usd
       let _annual_subtotal = {'symbol': symbol,
                               'native':
-                                {'USD': US_LOCALE.format(native_usd),
+                                {'USD': US_ACCOUNTING.format(native_usd),
                                   'native': native
                                 },
                               'rewards':
-                                {'USD': US_LOCALE.format(rewards_usd),
+                                {'USD': US_ACCOUNTING.format(rewards_usd),
                                   'WAVAX': rewards},
                               'total':
-                                {'USD': US_LOCALE.format(native_usd + rewards_usd)}}
+                                {'USD': US_ACCOUNTING.format(native_usd + rewards_usd)}}
 
       _annual_subtotals.push(_annual_subtotal)
     }
-    _totals['deposits'] = US_LOCALE.format(_totals.deposits)
-    _totals['debt'] = US_LOCALE.format(_totals.debt)
-    _totals['sum'] = US_LOCALE.format(_totals.sum)
-    _annual_totals['native'] = US_LOCALE.format(_annual_totals.native)
-    _annual_totals['rewards'] = US_LOCALE.format(_annual_totals.rewards)
-    _annual_totals['sum'] = US_LOCALE.format(_annual_totals.sum)
+
+    // format rates  _rates[symbol]['borrow']['rewards']
+    for (const [symbol, rate_types] of Object.entries(_rates)) {
+      for (const [rate_type, rates] of Object.entries(rate_types)) {
+        console.log('1', _rates[symbol][rate_type]['native'])
+        console.log('2', _rates[symbol][rate_type]['rewards'])
+        _rates[symbol][rate_type]['native'] = US_PERCENT.format(_rates[symbol][rate_type]['native'])
+        _rates[symbol][rate_type]['rewards'] = US_PERCENT.format(_rates[symbol][rate_type]['rewards'])
+        console.log('3', _rates[symbol][rate_type]['native'])
+        console.log('4', _rates[symbol][rate_type]['rewards'])
+      }
+    }
+    console.log(_rates)
+    setRates(_rates)
+    _totals['deposits'] = US_ACCOUNTING.format(_totals.deposits)
+    _totals['debt'] = US_ACCOUNTING.format(_totals.debt)
+    _totals['sum'] = US_ACCOUNTING.format(_totals.sum)
+    _annual_totals['native'] = US_ACCOUNTING.format(_annual_totals.native)
+    _annual_totals['rewards'] = US_ACCOUNTING.format(_annual_totals.rewards)
+    _annual_totals['sum'] = US_ACCOUNTING.format(_annual_totals.sum)
     console.log('subtotals',_subtotals)
     console.log('totals',_totals)
     console.log('annual subtotals', _annual_subtotals)
@@ -309,155 +322,97 @@ function App() {
   }
   return (
     <div className="App">
+      <div className="container mt-4">
       <AddressForm address={address} stateChanger={setAddress}/>
       <NetworkSelect network={network} stateChanger={setNetwork}/>
-      <h2>Current Rates</h2>
-          <div className="container table-head">
-            <div className="row align-items-start">
-              <div className="col">Token</div>
-              <div className="col">Deposit Rate</div>
-              <div className="col">Deposit Rewards</div>
-              <div className="col">Borrow Rate</div>
-              <div className="col">Borrow Rewards</div>
-            </div>
-          </div>
+      <hr/>
+      <h3>Current Rates</h3>
+      <table className="table">
+          <thead>
+            <tr>
+              <th scope="col">Token</th>
+              <th scope="col">Deposit</th>
+              <th scope="col">Deposit Incentives</th>
+              <th scope="col">Borrow</th>
+              <th scope="col">Borrow Incentives</th>
+            </tr>
+          </thead>
+          <tbody>
       {
         Object.entries(rates).map(([symbol, data]) =>   //.map((rate, index) => (
-          <div className="container">
-            <div className="row align-items-start">
-            <div className="col">{symbol}</div>
-            <div className="col">{100*data.deposit.native}</div>
-            <div className="col">{100*data.deposit.rewards}</div>
-            <div className="col">{100*data.borrow.native}</div>
-            <div className="col">{100*data.borrow.rewards}</div>
-            </div>
-          </div>
+          <tr>
+            <th scope="row">{symbol}</th>
+            <td>{data.deposit.native}</td>
+            <td>{data.deposit.rewards}</td>
+            <td>{data.borrow.native}</td>
+            <td>{data.borrow.rewards}</td>
+          </tr>
         )
       }
-      {/* <br></br>
-      <h2>User Balances (native)</h2>
-      <div className="container">
-          <div className="row align-items-start">
-            <div className="col">Token</div>
-            <div className="col">Deposits</div>
-            <div className="col">Borrows</div>
-          </div>
-        </div>
-        <div className="container">
-          <div className="row align-items-start">
-            <div className="col">============</div>
-            <div className="col">============</div>
-            <div className="col">============</div>
-          </div>
-        </div>
-      {
-        userReserves.map((reserve, index) => (
-          <div className="container">
-            <div className="row align-items-start">
-            <div className="col">{reserve.reserve.symbol}</div>
-            <div className="col">{reserve.currentATokenBalance / 10**18}</div>
-            <div className="col">{reserve.currentTotalDebt / 10**18}</div>
-            </div>
-          </div>
-        ))
-      } */}
+        </tbody>
+      </table>
       <br></br>
-      <h2>User Balances (USD)</h2>
-        <div className="container">
-          <div className="row align-items-start">
-            <div className="col">Token</div>
-            <div className="col">Deposits</div>
-            <div className="col">Borrows</div>
-            <div className="col">Sum</div>
-          </div>
-        </div>
-        <div className="container">
-          <div className="row align-items-start">
-            <div className="col">============</div>
-            <div className="col">============</div>
-            <div className="col">============</div>
-            <div className="col">============</div>
-          </div>
-        </div>
+      <h3>User Balances (USD)</h3>
+        <table className="table">
+          <thead>
+            <tr>
+              <th scope="col">Token</th>
+              <th scope="col">Deposits</th>
+              <th scope="col">Borrows</th>
+              <th scope="col">Total</th>
+            </tr>
+          </thead>
+          <tbody>
         {
           userSubtotals.map((token, index) => (
-            
-            <div className="container">
-              <div className="row align-items-start">
-              <div className="col">{token.symbol}</div>
-              <div className="col">{token.deposits}</div>
-              <div className="col">{token.debt}</div>
-              <div className="col">{token.sum}</div>
-              </div>
-            </div>
-
+            <tr>
+              <th scope="row">{token.symbol}</th>
+              <td>{token.deposits}</td>
+              <td>{token.debt}</td>
+              <td>{token.sum}</td>
+            </tr>
           ))
         }
-        <div className="container">
-          <div className="row align-items-start">
-            <div className="col">============</div>
-            <div className="col">============</div>
-            <div className="col">============</div>
-            <div className="col">============</div>
-          </div>
-        </div>
-
-        <div className="container">
-          <div className="row align-items-start">
-            <div className="col"/>
-              { <div className="col">{userTotals.deposits}</div> }
-              { <div className="col">{userTotals.debt}</div> }
-              {  <div className="col">{userTotals.sum}</div> }
-            </div>
-        </div>
+          <tr>
+            <th scope="row">Total</th>
+            { <td>{userTotals.deposits}</td> }
+            { <td >{userTotals.debt}</td> }
+            {  <td>{userTotals.sum}</td> }
+          </tr>
+          </tbody>
+        </table>
 
         <br></br>
-        <h2>Annual Rewards (current rates extrapolated)</h2>
-        <div className="container">
-          <div className="row align-items-start">
-            <div className="col">Token</div>
-            <div className="col">Native Rewards</div>
-            <div className="col">Incentives</div>
-            <div className="col">Sum</div>
-          </div>
-        </div>
-        <div className="container">
-          <div className="row align-items-start">
-            <div className="col">============</div>
-            <div className="col">============</div>
-            <div className="col">============</div>
-            <div className="col">============</div>
-          </div>
-        </div>
+        <h3>Annual Rewards (projected)</h3>
+        <table className="table">
+        <thead>
+            <tr>
+              <th scope="col">Token</th>
+              <th scope="col">Native Interest</th>
+              <th scope="col">Incentives</th>
+              <th scope="col">Total</th>
+            </tr>
+          </thead>
+          <tbody>
         {
           annualSubtotals.map((item, index) => (
-            <div className="container">
-              <div className="row align-items-start">
-              <div className="col">{item.symbol}</div>
-              <div className="col">{item.native.USD}</div>
-              <div className="col">{item.rewards.USD}</div>
-              <div className="col">{item.total.USD}</div>
-              </div>
-            </div>
+            <tr>
+              <th scope="row">{item.symbol}</th>
+              <td>{item.native.USD}</td>
+              <td>{item.rewards.USD}</td>
+              <td>{item.total.USD}</td>
+            </tr>
           ))
         }
-        <div className="container">
-          <div className="row align-items-start">
-            <div className="col">============</div>
-            <div className="col">============</div>
-            <div className="col">============</div>
-            <div className="col">============</div>
-          </div>
-        </div>
-        <div className="container">
-          <div className="row align-items-start">
-            <div className="col"/>
-              { <div className="col">{annualTotals.native}</div> }
-              { <div className="col">{annualTotals.rewards}</div> }
-              {  <div className="col">{annualTotals.sum}</div> }
-            </div>
-        </div>
-
+          <tr>
+            <th scope="row">Total</th>
+            { <td>{annualTotals.native}</td> }
+            { <td >{annualTotals.rewards}</td> }
+            { <td>{annualTotals.sum}</td> }
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

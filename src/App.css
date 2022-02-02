@@ -40,3 +40,9 @@
 .table-head {
   font-weight: bold;
 }
+th, td {
+  text-align:right;
+}
+td {
+  font-family: 'Consolas', 'Courier New', Courier, monospace;
+}

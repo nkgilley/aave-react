@@ -47,13 +47,22 @@ class AddressForm extends Component {
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <label>
-          Address:  
-          <input type="text" value={this.state.value} onChange={this.handleChange} />
-        </label>
-        <input type="submit" value="Submit" className="btn btn-secondary" />
-        <button type="button" className="btn btn-primary" onClick={this.connectMetamask}>Connect Metamask</button>
+        <div className="row">
+          <div className="col">
+            <button type="button" className="btn btn-primary float-end" onClick={this.connectMetamask}>Connect Metamask</button>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col">
+            <label>
+              Address:  
+              <input type="text" value={this.state.value} onChange={this.handleChange} />
+            </label>
+            <input type="submit" value="Manual Lookup" className="btn btn-secondary" />
+          </div>
+        </div>
         <p>Current Account: {this.address}</p>
+        
       </form>
     );
   }
