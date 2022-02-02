@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/aave-react/static/css/main.298a4182.chunk.css",
-    "main.js": "/aave-react/static/js/main.80096bac.chunk.js",
-    "main.js.map": "/aave-react/static/js/main.80096bac.chunk.js.map",
+    "main.css": "/aave-react/static/css/main.1da31bfe.chunk.css",
+    "main.js": "/aave-react/static/js/main.07555621.chunk.js",
+    "main.js.map": "/aave-react/static/js/main.07555621.chunk.js.map",
     "runtime-main.js": "/aave-react/static/js/runtime-main.77470ab4.js",
     "runtime-main.js.map": "/aave-react/static/js/runtime-main.77470ab4.js.map",
     "static/css/2.0a9ec390.chunk.css": "/aave-react/static/css/2.0a9ec390.chunk.css",
@@ -12,14 +12,14 @@
     "static/js/3.58ac52bc.chunk.js.map": "/aave-react/static/js/3.58ac52bc.chunk.js.map",
     "index.html": "/aave-react/index.html",
     "static/css/2.0a9ec390.chunk.css.map": "/aave-react/static/css/2.0a9ec390.chunk.css.map",
-    "static/css/main.298a4182.chunk.css.map": "/aave-react/static/css/main.298a4182.chunk.css.map",
+    "static/css/main.1da31bfe.chunk.css.map": "/aave-react/static/css/main.1da31bfe.chunk.css.map",
     "static/js/2.9e353586.chunk.js.LICENSE.txt": "/aave-react/static/js/2.9e353586.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.77470ab4.js",
     "static/css/2.0a9ec390.chunk.css",
     "static/js/2.9e353586.chunk.js",
-    "static/css/main.298a4182.chunk.css",
-    "static/js/main.80096bac.chunk.js"
+    "static/css/main.1da31bfe.chunk.css",
+    "static/js/main.07555621.chunk.js"
   ]
 }
