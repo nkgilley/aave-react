@@ -48,20 +48,16 @@ class AddressForm extends Component {
     return (
       <form onSubmit={this.handleSubmit}>
         <div className="row">
-          <div className="col">
+          <div className="col-8">
+            <label for="addressInput">Address:</label>  
+            <input id="addressInput" type="text" value={this.state.value} onChange={this.handleChange} />
+            <input type="submit" value="Manual" className="btn btn-secondary" />
+          </div>
+          <div className="col-4">
             <button type="button" className="btn btn-primary float-end" onClick={this.connectMetamask}>Connect Metamask</button>
           </div>
         </div>
-        <div className="row">
-          <div className="col">
-            <label>
-              Address:  
-              <input type="text" value={this.state.value} onChange={this.handleChange} />
-            </label>
-            <input type="submit" value="Manual Lookup" className="btn btn-secondary" />
-          </div>
-        </div>
-        <p>Current Account: {this.address}</p>
+        {/* <p>Current Account: {this.address}</p> */}
         
       </form>
     );

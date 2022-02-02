@@ -46,3 +46,6 @@ th, td {
 td {
   font-family: 'Consolas', 'Courier New', Courier, monospace;
 }
+.bold {
+  font-weight: bold;
+}

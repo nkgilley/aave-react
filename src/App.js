@@ -19,9 +19,7 @@ const APIURLS = {'avax':'https://api.thegraph.com/subgraphs/name/aave/protocol-v
                   'eth': 'https://api.thegraph.com/subgraphs/name/aave/protocol-v2'}
 const query = `
 query {
-  reserves (where: {
-    usageAsCollateralEnabled: true
-  }) {
+  reserves (where: {}) {
     id
     name
     price {
@@ -112,7 +110,7 @@ function App() {
 
   useEffect(() => {
     fetchData()
-  }, [address, network]) // only rerun if address changes
+  }, [address, network]) // only rerun if address or network changes
 
   async function fetchData() {
     if (!address || address.length === 0) return
@@ -151,12 +149,14 @@ function App() {
     let _totals = {'deposits': 0, 'debt': 0, 'sum': 0}
     let _annual_subtotals = []
     let _annual_totals = {'native': 0, 'rewards': 0, 'sum': 0}
-    let _token_list = ['ETH', "MATIC", "AVAX"]  //always get these rates
+    let _token_list = ["ETH", "MATIC", "AVAX"]  //always get these rates
     for (var i=0; i < user_response.data.userReserves.length; i++) {
       let reserve = user_response.data.userReserves[i]
       let symbol = reserve.reserve.symbol
-      let currentATokenBalance = parseFloat(reserve['currentATokenBalance']) / WEI_DECIMALS
-      let currentTotalDebt  = parseFloat(reserve['currentTotalDebt']) / WEI_DECIMALS
+      let decimals = WEI_DECIMALS
+      if (symbol.indexOf('USDC') > -1 || symbol.indexOf('USDT') > -1) decimals = 10**6
+      let currentATokenBalance = parseFloat(reserve['currentATokenBalance']) / decimals
+      let currentTotalDebt  = parseFloat(reserve['currentTotalDebt']) / decimals
       let _subtotal = {'symbol': symbol, 'debt': 0, 'deposits': 0}
       console.log('tally',symbol, currentATokenBalance, currentTotalDebt)
       let _usdp = await get_token_price_in_usd(symbol)
@@ -253,10 +253,12 @@ function App() {
     for (var i=0; i < user_response.data.userReserves.length; i++) {
       let reserve = user_response.data.userReserves[i]
       let symbol = reserve.reserve.symbol
-      if (!_token_list.includes(symbol) || symbol === 'USDT') continue
+      if (!_token_list.includes(symbol)) continue
       console.log(symbol, _token_list)
-      let currentATokenBalance = parseFloat(reserve['currentATokenBalance']) / WEI_DECIMALS
-      let currentTotalDebt  = parseFloat(reserve['currentTotalDebt']) / WEI_DECIMALS
+      let decimals = WEI_DECIMALS
+      if (symbol.indexOf('USDC') > -1 || symbol.indexOf('USDT') > -1) decimals = 10**6
+      let currentATokenBalance = parseFloat(reserve['currentATokenBalance']) / decimals
+      let currentTotalDebt  = parseFloat(reserve['currentTotalDebt']) / decimals
       if (currentATokenBalance === 0 && currentTotalDebt === 0) continue
       // calc native rewards
       console.log('Annual rewards for this symbol', symbol)
@@ -323,6 +325,8 @@ function App() {
   return (
     <div className="App">
       <div className="container mt-4">
+      <h1>AAVE Profit Calculator</h1>
+      <hr/>
       <AddressForm address={address} stateChanger={setAddress}/>
       <NetworkSelect network={network} stateChanger={setNetwork}/>
       <hr/>
@@ -373,17 +377,19 @@ function App() {
             </tr>
           ))
         }
+          </tbody>
+          <tfoot>
           <tr>
             <th scope="row">Total</th>
-            { <td>{userTotals.deposits}</td> }
-            { <td >{userTotals.debt}</td> }
-            {  <td>{userTotals.sum}</td> }
+            { <td className="bold">{userTotals.deposits}</td> }
+            { <td className="bold">{userTotals.debt}</td> }
+            { <td className="bold">{userTotals.sum}</td> }
           </tr>
-          </tbody>
+          </tfoot>
         </table>
 
         <br></br>
-        <h3>Annual Rewards (projected)</h3>
+        <h3>Annual Profits (projected)</h3>
         <table className="table">
         <thead>
             <tr>
@@ -404,13 +410,15 @@ function App() {
             </tr>
           ))
         }
-          <tr>
-            <th scope="row">Total</th>
-            { <td>{annualTotals.native}</td> }
-            { <td >{annualTotals.rewards}</td> }
-            { <td>{annualTotals.sum}</td> }
-          </tr>
           </tbody>
+          <tfoot>
+            <tr>
+              <th scope="col" className="total">Total</th>
+              { <td className="bold">{annualTotals.native}</td> }
+              { <td className="bold">{annualTotals.rewards}</td> }
+              { <td className="bold">{annualTotals.sum}</td> }
+            </tr>
+          </tfoot>
         </table>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import './NetworkSelect.css';
 
 class NetworkSelect extends Component {
   constructor(props) {
@@ -17,14 +18,15 @@ class NetworkSelect extends Component {
   render() {
     return (
       <form>
-        <label>
-          Network:
-          <select value={this.state.value} onChange={this.handleChange}>
-            <option value="eth">Mainnet</option>
-            <option value="avax">Avalanche</option>
-            <option value="matic">Matic</option>
-          </select>
-        </label>
+        <div className="row justify-content-end mt-2">
+          <div className="col-3">
+            <select id="selectNetwork" className="form-select" value={this.state.value} onChange={this.handleChange}>
+              <option value="eth">Mainnet</option>
+              <option value="avax">Avalanche</option>
+              <option value="matic">Matic</option>
+            </select>
+          </div>
+        </div>
       </form>
     );
   }
