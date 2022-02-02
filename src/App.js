@@ -397,7 +397,7 @@ function App() {
             <tr>
               <th scope="col">Token</th>
               <th scope="col">Native Interest</th>
-              <th scope="col">Incentives</th>
+              <th scope="col">Rewards</th>
               <th scope="col">Total</th>
             </tr>
           </thead>
