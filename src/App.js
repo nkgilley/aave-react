@@ -233,6 +233,9 @@ function App() {
       let incentiveBorrowAPR = (vEmissionPerYear * REWARD_PRICE_ETH * underlying_token_decimals)/
                                 (totalCurrentVariableDebt * token_price_eth * REWARD_DECIMALS)
 
+      let incentiveDepositAPY = ((1 + (incentiveDepositAPR / 365)) ** 365) - 1
+      let incentiveBorrowAPY = ((1 + (incentiveBorrowAPR / 365)) ** 365) - 1
+
       _rates[symbol] =  {'deposit': {'native': depositAPY }, 'borrow': {'native': variableBorrowAPY }}
       // console.log('(aEmissionPerSecond * SECONDS_PER_YEAR * REWARD_PRICE_ETH * WAD) / (totalATokenSupply * token_price_eth * underlying_token_decimals)',(aEmissionPerSecond * SECONDS_PER_YEAR * REWARD_PRICE_ETH * WAD) / (totalATokenSupply * token_price_eth * underlying_token_decimals))
       // console.log('(aEmissionPerSecond * SECONDS_PER_YEAR * REWARD_PRICE_ETH * WAD) / (totalATokenSupply * token_price_eth * underlying_token_decimals)',(aEmissionPerSecond * SECONDS_PER_YEAR * REWARD_PRICE_ETH * WAD))
@@ -334,10 +337,10 @@ function App() {
           <thead>
             <tr>
               <th scope="col">Token</th>
-              <th scope="col">Deposit</th>
-              <th scope="col">Deposit Incentives</th>
-              <th scope="col">Borrow</th>
-              <th scope="col">Borrow Incentives</th>
+              <th scope="col">Deposit APY</th>
+              <th scope="col">Deposit Rewards APR</th>
+              <th scope="col">Borrow APY</th>
+              <th scope="col">Borrow Rewards APR</th>
             </tr>
           </thead>
           <tbody>
