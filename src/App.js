@@ -213,8 +213,8 @@ function App() {
       // APY and APR are returned here as decimals, multiply by 100 to get the percents     
       let depositAPR = liquidityRate/RAY
       let variableBorrowAPR = variableBorrowRate/RAY
-      // let depositAPY = ((1 + (depositAPR / SECONDS_PER_YEAR)) ^ SECONDS_PER_YEAR) - 1
-      // let variableBorrowAPY = ((1 + (variableBorrowAPR / SECONDS_PER_YEAR)) ^ SECONDS_PER_YEAR) - 1
+      let depositAPY = ((1 + (depositAPR / SECONDS_PER_YEAR)) ** SECONDS_PER_YEAR) - 1
+      let variableBorrowAPY = ((1 + (variableBorrowAPR / SECONDS_PER_YEAR)) ** SECONDS_PER_YEAR) - 1
       
       // Incentives calculation
       let aEmissionPerYear = aEmissionPerSecond * SECONDS_PER_YEAR
@@ -227,14 +227,13 @@ function App() {
       console.log('(totalATokenSupply * token_price_eth * underlying_token_decimals)', totalATokenSupply , token_price_eth , underlying_token_decimals)
       console.log("======================== " + symbol + " ================================="  )
 
-
       let incentiveDepositAPR = (aEmissionPerYear * REWARD_PRICE_ETH * underlying_token_decimals)/
                                 (totalATokenSupply * token_price_eth * REWARD_DECIMALS)
                                 
       let incentiveBorrowAPR = (vEmissionPerYear * REWARD_PRICE_ETH * underlying_token_decimals)/
                                 (totalCurrentVariableDebt * token_price_eth * REWARD_DECIMALS)
 
-      _rates[symbol] =  {'deposit': {'native': depositAPR }, 'borrow': {'native': variableBorrowAPR }}
+      _rates[symbol] =  {'deposit': {'native': depositAPY }, 'borrow': {'native': variableBorrowAPY }}
       // console.log('(aEmissionPerSecond * SECONDS_PER_YEAR * REWARD_PRICE_ETH * WAD) / (totalATokenSupply * token_price_eth * underlying_token_decimals)',(aEmissionPerSecond * SECONDS_PER_YEAR * REWARD_PRICE_ETH * WAD) / (totalATokenSupply * token_price_eth * underlying_token_decimals))
       // console.log('(aEmissionPerSecond * SECONDS_PER_YEAR * REWARD_PRICE_ETH * WAD) / (totalATokenSupply * token_price_eth * underlying_token_decimals)',(aEmissionPerSecond * SECONDS_PER_YEAR * REWARD_PRICE_ETH * WAD))
       // console.log('(totalATokenSupply * token_price_eth * underlying_token_decimals)',(totalATokenSupply * token_price_eth * underlying_token_decimals))
