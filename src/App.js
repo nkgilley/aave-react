@@ -327,7 +327,7 @@ function App() {
   return (
     <div className="App">
       <div className="container mt-4">
-      <h1>AAVE Profit Calculator</h1>
+      <h1>AAVE Interest Calculator</h1>
       <hr/>
       <AddressForm address={address} stateChanger={setAddress}/>
       <NetworkSelect network={network} stateChanger={setNetwork}/>
@@ -391,7 +391,7 @@ function App() {
         </table>
 
         <br></br>
-        <h3>Annual Profits (projected)</h3>
+        <h3>Annual Interest (projected)</h3>
         <table className="table">
         <thead>
             <tr>
