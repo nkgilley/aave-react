@@ -54,7 +54,7 @@ class AddressForm extends Component {
             <input type="submit" value="Manual" className="btn btn-secondary" />
           </div>
           <div className="col-4">
-            <button type="button" className="btn btn-primary float-end" onClick={this.connectMetamask}>Connect Metamask</button>
+            <button type="button" className="btn btn-dark float-end" onClick={this.connectMetamask}>Connect Metamask</button>
           </div>
         </div>
         {/* <p>Current Account: {this.address}</p> */}

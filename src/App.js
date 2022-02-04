@@ -1,4 +1,5 @@
 import './App.css';
+import Header from './components/Header.js';
 import AddressForm from './components/AddressForm'
 import NetworkSelect from './components/NetworkSelect'
 import { createClient } from 'urql'
@@ -326,9 +327,8 @@ function App() {
   }
   return (
     <div className="App">
+      <Header class="row" />
       <div className="container mt-4">
-      <h1>AAVE Interest Calculator</h1>
-      <hr/>
       <AddressForm address={address} stateChanger={setAddress}/>
       <NetworkSelect network={network} stateChanger={setNetwork}/>
       <hr/>
