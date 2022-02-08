@@ -7,8 +7,9 @@ const WEI_DECIMALS = 10**18 // All emissions are in wei units, 18 decimal places
 class Balances extends Component {
   constructor(props) {
     super(props);
-    this.state = {subtotals: [], network: this.props.network, address: this.props.address};
-    this.stateChanger = this.props.stateChanger;
+    this.state = {subtotals: [], totals: [], network: this.props.network, address: this.props.address};
+    this.subtotalsStateChanger = this.props.subtotalsStateChanger;
+    this.totalsStateChanger = this.props.totalsStateChanger;
     this.updateBalances();
 }
 
@@ -85,7 +86,9 @@ class Balances extends Component {
       }
     }
     this.state.subtotals = _subtotals;
-    this.stateChanger(_subtotals)
+    this.state.totals = _totals;
+    this.subtotalsStateChanger(_subtotals)
+    this.totalsStateChanger(_totals)
   }
 
   render() {
@@ -113,14 +116,14 @@ class Balances extends Component {
           ))
         }
           </tbody>
-          {/* <tfoot>
+          <tfoot>
           <tr>
             <th scope="row">Total</th>
-            { <td className="bold">{userTotals.deposits}</td> }
-            { <td className="bold">{userTotals.debt}</td> }
-            { <td className="bold">{userTotals.sum}</td> }
+            { <td className="bold">{formatAsUSD(this.state.totals.deposits)}</td> }
+            { <td className="bold">{formatAsUSD(this.state.totals.debt)}</td> }
+            { <td className="bold">{formatAsUSD(this.state.totals.sum)}</td> }
           </tr>
-          </tfoot> */}
+          </tfoot>
         </table>
       </div>
     );

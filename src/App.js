@@ -215,7 +215,7 @@ function App() {
       <NetworkSelect network={network} stateChanger={setNetwork}/>
       <hr/>
       <Rates network={network} stateChanger={setRates}/>
-      <Balances address={address} network={network} stateChanger={setUserSubtotals}/>
+      <Balances address={address} network={network} subtotalsStateChanger={setUserSubtotals} totalsStateChanger={setUserTotals}/>
       {/* <h3>User Balances (USD)</h3>
         <table className="table">
           <thead>
