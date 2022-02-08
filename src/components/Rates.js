@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { createClient } from 'urql'
-import { clients, rewardTokens } from '../App.js'
-import { get_token_price_in_eth } from '../helpers.js'
+import { clients, rewardTokens, tokenList } from '../App.js'
+import { get_token_price_in_eth, formatAsPercent } from '../helpers.js'
 import '../App.css';
 const RAY = 10**27
 const WEI_DECIMALS = 10**18 // All emissions are in wei units, 18 decimal places
@@ -33,10 +33,17 @@ query {
 class Rates extends Component {
   constructor(props) {
     super(props);
-    this.state = {value: this.props.network};
+    this.state = {rates: {}, network: this.props.network};
     this.stateChanger = this.props.stateChanger;
-    this.network = this.props.network;
+    this.updateRates();
+}
 
+  componentDidUpdate(prevProps) {
+    // Typical usage (don't forget to compare props):
+    if (this.props.network !== prevProps.network) {
+      this.state.network = this.props.network
+      this.updateRates()
+    }
   }
 
   async updateRates() {
@@ -45,20 +52,20 @@ class Rates extends Component {
     // get aave rates data from thegraph.
     // only care about rates the user has balances for
     /////////////////////////////////////////
-    // console.log(this.network)
+    console.log('update rates')
     // let client = createClient({
     //   url: APIURLS[this.network]
     // })
-    let client = clients[this.network]
-    let _token_list = ['AVAX','ETH','DAI']
+    let client = clients[this.state.network]
+    let _token_list = tokenList[this.state.network]
     console.log(client)
     const response = await client.query(query).toPromise();
     let _rates = {}
-    let reward_token_ticker = rewardTokens[this.network]
+    let reward_token_ticker = rewardTokens[this.state.network]
     const REWARD_PRICE_ETH = await get_token_price_in_eth(reward_token_ticker.replace('W',''))
     for (var i=0; i < response.data.reserves.length; i++) {
         let token = response.data.reserves[i]
-        let symbol = token['symbol']
+        let symbol = token['symbol'].replace('W','').replace('.e','')
         console.log('111111',symbol, _token_list)
         if (!_token_list.includes(symbol)) continue
         let variableBorrowRate = parseFloat(token['variableBorrowRate'])
@@ -108,10 +115,9 @@ class Rates extends Component {
         _rates[symbol]['borrow']['rewards'] = 0
         }
     }
-    console.log('rate',_rates)
+    console.log('rates',_rates)
     // setRates(_rates)
-
-    this.setState({value: _rates});
+    this.state.rates = _rates;
     this.stateChanger(_rates)
   }
 
@@ -131,13 +137,13 @@ class Rates extends Component {
             </thead>
             <tbody>
         {
-          Object.entries(this.state.value).map(([symbol, data]) =>
+          Object.entries(this.state.rates).map(([symbol, data]) =>
             <tr>
               <th scope="row">{symbol}</th>
-              <td>{data.deposit.native}</td>
-              <td>{data.deposit.rewards}</td>
-              <td>{data.borrow.native}</td>
-              <td>{data.borrow.rewards}</td>
+              <td>{formatAsPercent(data.deposit.native)}</td>
+              <td>{formatAsPercent(data.deposit.rewards)}</td>
+              <td>{formatAsPercent(data.borrow.native)}</td>
+              <td>{formatAsPercent(data.borrow.rewards)}</td>
             </tr>
           )
         }

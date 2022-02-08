@@ -23,7 +23,7 @@ class NetworkSelect extends Component {
             <select id="selectNetwork" className="form-select" value={this.state.value} onChange={this.handleChange}>
               <option value="eth">Mainnet</option>
               <option value="avax">Avalanche</option>
-              <option value="matic">Matic</option>
+              <option value="matic">Polygon</option>
             </select>
           </div>
         </div>

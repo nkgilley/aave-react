@@ -1,10 +1,12 @@
 import './App.css';
 import Header from './components/Header.js';
+import Balances from './components/Balances.js';
 import Rates from './components/Rates.js';
 import AddressForm from './components/AddressForm'
 import NetworkSelect from './components/NetworkSelect'
 import { createClient } from 'urql'
 import { useEffect, useState } from 'react'
+import { locatedError } from 'graphql';
 
 const US_ACCOUNTING = Intl.NumberFormat('en-US', {
   style: "currency",
@@ -35,6 +37,9 @@ const maticClient = createClient({
 })
 export const clients = {'matic': maticClient, 'avax': avaxClient, 'eth': ethClient}
 export const rewardTokens = {'matic': 'WMATIC', 'avax': 'WAVAX', 'eth': 'WETH'}
+export let tokenList = {'matic': ['MATIC', 'WETH', 'DAI', 'USDC', 'USDT', 'BTC', 'AAVE'],
+                          'avax': ['AVAX', 'DAI', 'USDC', 'USDT', 'WETH', 'BTC', 'AAVE'],
+                          'eth': ['ETH', 'AAVE', 'DAI', 'USDC', 'USDT', 'XSUSHI', 'BTC', 'AAVE']}
 
 function App() {
   
@@ -127,70 +132,6 @@ function App() {
     // }
     // console.log('token list', _token_list)
 
-    /////////////////////////////////////////
-    // get aave rates data from thegraph.
-    // only care about rates the user has balances for
-    /////////////////////////////////////////
-    // console.log(network)
-    // console.log(client)
-    // const response = await client.query(query).toPromise();
-    // let _rates = {}
-    // const REWARD_PRICE_ETH = await get_token_price_in_eth(reward_token_ticker.replace('W',''))
-    // for (var i=0; i < response.data.reserves.length; i++) {
-    //   let token = response.data.reserves[i]
-    //   let symbol = token['symbol']
-    //   console.log('111111',symbol, _token_list)
-    //   if (!_token_list.includes(symbol)) continue
-    //   let variableBorrowRate = parseFloat(token['variableBorrowRate'])
-    //   let liquidityRate = parseFloat(token['liquidityRate'])
-    //   let aEmissionPerSecond = parseFloat(token['aEmissionPerSecond'])
-    //   let vEmissionPerSecond = parseFloat(token['vEmissionPerSecond'])
-    //   let totalCurrentVariableDebt = parseFloat(token['totalCurrentVariableDebt'])
-    //   let totalATokenSupply  = parseFloat(token['totalATokenSupply'])   
-    //   let token_price_eth = await get_token_price_in_eth(symbol)
-    //   let underlying_token_decimals = 10**parseFloat(token['decimals'])
-
-    //   // Deposit and Borrow calculations
-    //   // APY and APR are returned here as decimals, multiply by 100 to get the percents     
-    //   let depositAPR = liquidityRate/RAY
-    //   let variableBorrowAPR = variableBorrowRate/RAY
-    //   let depositAPY = ((1 + (depositAPR / SECONDS_PER_YEAR)) ** SECONDS_PER_YEAR) - 1
-    //   let variableBorrowAPY = ((1 + (variableBorrowAPR / SECONDS_PER_YEAR)) ** SECONDS_PER_YEAR) - 1
-      
-    //   // Incentives calculation
-    //   let aEmissionPerYear = aEmissionPerSecond * SECONDS_PER_YEAR
-    //   let vEmissionPerYear = vEmissionPerSecond * SECONDS_PER_YEAR
-
-    //   // UNDERLYING_TOKEN_DECIMALS will be the decimals of token underlying the aToken or debtToken
-    //   // For Example, UNDERLYING_TOKEN_DECIMALS for aUSDC will be 10**6 because USDC has 6 decimals
-    //   console.log("======================== " + symbol + " ================================="  )
-    //   console.log('(aEmissionPerYear * REWARD_PRICE_ETH * WEI_DECIMALS)', aEmissionPerYear, REWARD_PRICE_ETH, WEI_DECIMALS)
-    //   console.log('(totalATokenSupply * token_price_eth * underlying_token_decimals)', totalATokenSupply , token_price_eth , underlying_token_decimals)
-    //   console.log("======================== " + symbol + " ================================="  )
-
-    //   let incentiveDepositAPR = (aEmissionPerYear * REWARD_PRICE_ETH * underlying_token_decimals)/
-    //                             (totalATokenSupply * token_price_eth * REWARD_DECIMALS)
-                                
-    //   let incentiveBorrowAPR = (vEmissionPerYear * REWARD_PRICE_ETH * underlying_token_decimals)/
-    //                             (totalCurrentVariableDebt * token_price_eth * REWARD_DECIMALS)
-
-    //   let incentiveDepositAPY = ((1 + (incentiveDepositAPR / 365)) ** 365) - 1
-    //   let incentiveBorrowAPY = ((1 + (incentiveBorrowAPR / 365)) ** 365) - 1
-
-    //   _rates[symbol] =  {'deposit': {'native': depositAPY }, 'borrow': {'native': variableBorrowAPY }}
-    //   // console.log('(aEmissionPerSecond * SECONDS_PER_YEAR * REWARD_PRICE_ETH * WAD) / (totalATokenSupply * token_price_eth * underlying_token_decimals)',(aEmissionPerSecond * SECONDS_PER_YEAR * REWARD_PRICE_ETH * WAD) / (totalATokenSupply * token_price_eth * underlying_token_decimals))
-    //   // console.log('(aEmissionPerSecond * SECONDS_PER_YEAR * REWARD_PRICE_ETH * WAD) / (totalATokenSupply * token_price_eth * underlying_token_decimals)',(aEmissionPerSecond * SECONDS_PER_YEAR * REWARD_PRICE_ETH * WAD))
-    //   // console.log('(totalATokenSupply * token_price_eth * underlying_token_decimals)',(totalATokenSupply * token_price_eth * underlying_token_decimals))
-    //   _rates[symbol]['deposit']['rewards'] = incentiveDepositAPR
-    //   if (totalCurrentVariableDebt > 0) {
-    //     _rates[symbol]['borrow']['rewards'] = incentiveBorrowAPR
-    //   } else {
-    //     _rates[symbol]['borrow']['rewards'] = 0
-    //   }
-    // }
-    // console.log('rate',_rates)
-    // setRates(_rates)
-     
 
     // // Calculate annual rewards
     // for (var i=0; i < user_response.data.userReserves.length; i++) {
@@ -274,6 +215,7 @@ function App() {
       <NetworkSelect network={network} stateChanger={setNetwork}/>
       <hr/>
       <Rates network={network} stateChanger={setRates}/>
+      <Balances address={address} network={network} stateChanger={setUserSubtotals}/>
       {/* <h3>User Balances (USD)</h3>
         <table className="table">
           <thead>

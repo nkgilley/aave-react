@@ -9,3 +9,9 @@ This application is live at [https://nkgilley.github.io/aave-react](https://nkgi
   - `npm run start`
 - Deploy to github pages
   - `npm run deploy`
+
+## TODO
+- Refresh button
+- separate components
+- toggle USD/native balances
+- add rates over time graphs
